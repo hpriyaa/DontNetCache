@@ -12,6 +12,11 @@ CREATE TABLE Auth(
 --Inserting Values into Authentication Table
 INSERT INTO Auth Values
 ('rammey@gmail.com','qwertyuikjhgfdsa','ADMIN')
+('ram@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
+('rani@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
+('raju@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
+('anshul@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
+('anshul@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
  
 --Creating the Customer TABLE
 CREATE TABLE Customer
