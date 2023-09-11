@@ -11,13 +11,12 @@ CREATE TABLE Auth(
 
 --Inserting Values into Authentication Table
 INSERT INTO Auth Values
-('rammey@gmail.com','qwertyuikjhgfdsa','ADMIN')
-('ram@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
-('rani@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
-('raju@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
-('anshul@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
-('anshul@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
- 
+('ram@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
+('rani@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
+('raju@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
+('anshul@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
+('apoorv@gmail.com','qwertyuikjhgfdsa','ADMIN')
+
 --Creating the Customer TABLE
 CREATE TABLE Customer
 (
@@ -64,7 +63,7 @@ INSERT Into Account VALUES
 --Creating the Transactions Table
 CREATE	TABLE Transactions(
 	transaction_number INT PRIMARY KEY IDENTITY(10,1),
-	account_number INT FOREIGN KEY REFERENCES Account(account_number),
+	account_number INT REFERENCES Account(account_number),
 	transaction_type VARCHAR(20) NOT NULL CONSTRAINT CHK_transactionType CHECK (transaction_type IN('WITHDRAWAL','DEPOSIT')),
 	transaction_amount FLOAT(24) NOT NULL,
 	transaction_timestamp DATE DEFAULT GETUTCDATE()	
@@ -74,4 +73,5 @@ CREATE	TABLE Transactions(
 INSERT Into Transactions VALUES
 (100,'WITHDRAWAL',20.0,'2023-09-08 11:10:20.687'),
 (101,'DEPOSIT',40.0,'2023-09-08 11:15:20.687')
+
 
