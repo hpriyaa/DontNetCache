@@ -43,7 +43,7 @@ CREATE TABLE Account
 	account_number INT PRIMARY KEY identity(100,1),
 	customer_id INT FOREIGN KEY REFERENCES Customer(customer_id),
 	balance float NOT NULL,
-	account_type VARCHAR(40) NOT NULL CHK_accountType CHECK (account_type IN('Salary','Savings','Current')) DEFAULT 'Savings',
+	account_type VARCHAR(40) NOT NULL CONSTRAINT CHK_accountType CHECK (account_type IN('Salary','Savings','Current')) DEFAULT 'Savings',
 	card_number VARCHAR(16) UNIQUE CONSTRAINT CHK_length
 	CHECK (card_number LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]') NOT NULL,
 	card_pin VARCHAR(4) UNIQUE CONSTRAINT CHK_pinLength
@@ -60,7 +60,7 @@ INSERT Into Account VALUES
 CREATE	TABLE Transactions(
 	transaction_number INT PRIMARY KEY IDENTITY(10,1),
 	account_number INT REFERENCES Account(account_number),
-	transaction_type VARCHAR(20) NOT NULL CHK_transactionType CHECK (transaction_type IN('WITHDRAWAL','DEPOSIT')),
+	transaction_type VARCHAR(20) NOT NULL CONSTRAINT CHK_transactionType CHECK (transaction_type IN('WITHDRAWAL','DEPOSIT')),
 	transaction_amount FLOAT(24) NOT NULL,
 	transaction_timestamp DATE DEFAULT GETUTCDATE()	
 )
