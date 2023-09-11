@@ -59,7 +59,7 @@ INSERT Into Account VALUES
 --Creating the Transactions Table
 CREATE	TABLE Transactions(
 	transaction_number INT PRIMARY KEY IDENTITY(10,1),
-	account_number INT REFERENCES Account(account_number),
+	account_number INT FOREIGN KEY REFERENCES Account(account_number),
 	transaction_type VARCHAR(20) NOT NULL CONSTRAINT CHK_transactionType CHECK (transaction_type IN('WITHDRAWAL','DEPOSIT')),
 	transaction_amount FLOAT(24) NOT NULL,
 	transaction_timestamp DATE DEFAULT GETUTCDATE()	
