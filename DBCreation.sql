@@ -4,7 +4,7 @@ use ALEHABankDB
 
 --Creating the Authentication Table
 CREATE TABLE Auth(
-	user_email NVARCHAR(40) PRIMARY KEY,
+	user_email VARCHAR(40) PRIMARY KEY,
 	user_password VARCHAR(16) NOT NULL CONSTRAINT CHK_pwdLength CHECK (LEN(user_password) = 16) ,
 	user_role VARCHAR(10) NOT NULL CONSTRAINT CHK_role CHECK (user_role IN('ADMIN','CUSTOMER'))
 )
@@ -21,7 +21,7 @@ CREATE TABLE Customer
 	dob DATE NOT NULL,
 	phone_number CHAR(10) UNIQUE CONSTRAINT CHK_phone_number
 	CHECK (phone_number LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]') NOT NULL,
-	email VARCHAR(30) FOREIGN KEY REFERENCES Auth(user_email),
+	email VARCHAR(40) FOREIGN KEY REFERENCES Auth(user_email),
 	customer_address VARCHAR(30),
 	city VARCHAR(20),
 	aadhaar_number CHAR(12) CONSTRAINT CHK_aadhaar_number
