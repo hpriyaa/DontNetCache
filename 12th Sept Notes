@@ -34,3 +34,5 @@ UPDATE Auth set user_role = 'CUSTOMER' WHERE user_email = 'apoorv@gmail.com'
 
 INSERT INTO Auth Values
 ('admin@gmail.com','qwertyuikjhgfdsa','ADMIN')
+
+
