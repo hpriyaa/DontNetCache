@@ -1,0 +1,36 @@
+Every Layer should have an interface and class.
+
+GetUserDetail the context is called. 
+
+AuthenticateUSer and GenerateJsonWebToken in Service Layer.
+
+Repo is for Data access so all the context and data operations
+
+Servica Layer has all the Business Logic
+
+Inject Interface from previous layer. Injection is done through the Constructor.
+
+Nonsensitive info can be sent across as a claims paramter 
+
+appsettings.JSON has the JWT Key and Issuer
+
+kestral? for non microsoft uses
+
+builder.Services.AddScoped<???>
+
+Microsofy.AspNetCore.Authentication.JWTBearer
+
+In Program.Cs we mention where the interface methods are used so that during interface injection definition can be pulled.
+
+Unity of container by concept of Reflection which class to be pulled is decided.
+
+automapper. [DTO Layer -> Model] assign DTO Layer to Model Class. 
+
+-force --tablename
+
+automapper has to be an exact copy
+
+UPDATE Auth set user_role = 'CUSTOMER' WHERE user_email = 'apoorv@gmail.com'
+
+INSERT INTO Auth Values
+('admin@gmail.com','qwertyuikjhgfdsa','ADMIN')
