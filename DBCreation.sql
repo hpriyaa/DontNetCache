@@ -11,11 +11,12 @@ CREATE TABLE Auth(
 
 --Inserting Values into Authentication Table
 INSERT INTO Auth Values
+('admin@gmail.com','qwertyuikjhgfdsa','ADMIN'),
 ('ram@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
 ('rani@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
 ('raju@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
 ('anshul@gmail.com','qwertyuikjhgfdsa','CUSTOMER'),
-('apoorv@gmail.com','qwertyuikjhgfdsa','ADMIN')
+('apoorv@gmail.com','qwertyuikjhgfdsa','CUSTOMER')
 
 --Creating the Customer TABLE
 CREATE TABLE Customer
@@ -25,7 +26,7 @@ CREATE TABLE Customer
 	dob DATE NOT NULL,
 	phone_number CHAR(10) UNIQUE CONSTRAINT CHK_phone_number
 	CHECK (phone_number LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]') NOT NULL,
-	email VARCHAR(40) FOREIGN KEY REFERENCES Auth(user_email),
+	email VARCHAR(40) UNIQUE FOREIGN KEY REFERENCES Auth(user_email),
 	customer_address VARCHAR(30),
 	city VARCHAR(20),
 	aadhaar_number CHAR(12) CONSTRAINT CHK_aadhaar_number
@@ -50,7 +51,7 @@ CREATE TABLE Account
 	account_type VARCHAR(40) NOT NULL CONSTRAINT CHK_accountType CHECK (account_type IN('Salary','Savings','Current')) DEFAULT 'Savings',
 	card_number VARCHAR(16) UNIQUE CONSTRAINT CHK_length
 	CHECK (card_number LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]') NOT NULL,
-	card_pin VARCHAR(4) UNIQUE CONSTRAINT CHK_pinLength
+	card_pin VARCHAR(4) CONSTRAINT CHK_pinLength
 	CHECK (card_pin LIKE '[0-9][0-9][0-9][0-9]') NOT NULL,
 	DATE_of_creation DATE DEFAULT GETUTCDATE()
  )
