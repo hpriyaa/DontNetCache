@@ -1,1 +1,3 @@
-In fund transfer - Add checks to ensure From and To accounts are not same
+In fund transfer - Add checks to ensure From and To accounts are not same.
+Check if amount >= balance before transaction.
+4xx errors - customer ids are skipped
