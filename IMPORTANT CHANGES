@@ -1,3 +1,5 @@
 In fund transfer - Add checks to ensure From and To accounts are not same.
 Check if amount >= balance before transaction.
 4xx errors - customer ids are skipped
+Multiple Accounts - drop down - for Fund Transfer and other pages on Frontend
+Cusotmer ID autofill - while creating account 
