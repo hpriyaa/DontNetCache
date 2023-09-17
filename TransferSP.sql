@@ -12,6 +12,10 @@ BEGIN
         -- Check if the sender has sufficient balance
         DECLARE @senderBalance FLOAT;
         SELECT @senderBalance = balance FROM Account WHERE account_number = @senderAccountNumber;
+DECLARE @transaction_number INT;
+DECLARE @ErrorMessage VARCHAR(2000);
+DECLARE @ErrorSeverity TINYINT
+DECLARE @ErrorState TINYINT
 
         IF @senderBalance >= @amount
         BEGIN
@@ -22,11 +26,14 @@ BEGIN
             UPDATE Account SET balance = balance + @amount WHERE account_number = @receiverAccountNumber;
 
             -- Insert a record into the transaction table for the transfer
-            INSERT INTO Transactions (account_number, transaction_type, transaction_amount)
+            INSERT INTO Transactions (account_number, transaction_type, transaction_amount) OUTPUT inserted.transaction_number
             VALUES (@senderAccountNumber, 'WITHDRAWAL', @amount);
 
-            INSERT INTO Transactions (account_number, transaction_type, transaction_amount)
-            VALUES (@receiverAccountNumber, 'DEPOSIT', @amount);
+SET @transaction_number = SCOPE_IDENTITY();
+SET IDENTITY_INSERT dbo.Transactions ON
+
+            INSERT INTO Transactions (transaction_number,account_number, transaction_type, transaction_amount)
+            VALUES (@transaction_number, @receiverAccountNumber, 'DEPOSIT', @amount);
 
             -- Commit the transaction
             COMMIT;
@@ -36,13 +43,18 @@ SET @result = 0;
         BEGIN
            
             ROLLBACK;
-            THROW 51000, 'Insufficient balance in sender''s account', 1;
+            --THROW 51000, 'Insufficient balance in sender''s account', 1;
 SET @result = -1;
 RETURN -1;
         END
     END TRY
     BEGIN CATCH
        
+SET @ErrorMessage  = ERROR_MESSAGE()
+    SET @ErrorSeverity = ERROR_SEVERITY()
+    SET @ErrorState    = ERROR_STATE()
+    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
+
         IF @@TRANCOUNT > 0
         BEGIN
             ROLLBACK;
@@ -52,4 +64,3 @@ SET @result = -2;
 RETURN -2;
     END CATCH;
 END;
-
