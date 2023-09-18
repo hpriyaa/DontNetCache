@@ -26,7 +26,7 @@ DECLARE @ErrorState TINYINT
             UPDATE Account SET balance = balance + @amount WHERE account_number = @receiverAccountNumber;
 
             -- Insert a record into the transaction table for the transfer
-            INSERT INTO Transactions (account_number, transaction_type, transaction_amount) OUTPUT inserted.transaction_number
+            INSERT INTO Transactions (account_number, transaction_type, transaction_amount)
             VALUES (@senderAccountNumber, 'WITHDRAWAL', @amount);
 
 SET @transaction_number = SCOPE_IDENTITY();
