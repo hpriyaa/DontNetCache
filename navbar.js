@@ -24,3 +24,7 @@ function CustomNavbar() {
 }
 
 export default CustomNavbar;
+
+
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.css';
