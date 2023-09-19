@@ -1,0 +1,62 @@
+import React, { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+
+function PinEntryPopup({ show, handleClose, handleLogin }) {
+    const [pin, setPin] = useState('');
+    const [attempts, setAttempts] = useState(0);
+
+    const handleSubmit = async () => {
+        // Call your API to validate the PIN here (replace with your API endpoint)
+        try {
+            const response = await fetch('/api/validate-pin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pin }),
+            });
+
+            if (response.ok) {
+                handleLogin();
+                handleClose();
+            } else {
+                setAttempts(attempts + 1);
+
+                if (attempts === 2) {
+                    // Log the user out or take appropriate action after 3 failed attempts
+                    handleClose();
+                }
+            }
+        } catch (error) {
+            console.error('Error validating PIN:', error);
+        }
+    };
+
+    return (
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Enter Your PIN</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter your PIN"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    Close
+                </Button>
+                <Button variant="primary" onClick={handleSubmit}>
+                    Submit
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+}
+
+export default PinEntryPopup;
