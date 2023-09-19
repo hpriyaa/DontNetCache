@@ -1,0 +1,38 @@
+import React, { useState } from 'react';
+import PinEntryPopup from './PinEntryPopup';
+
+function App() {
+    const [showPinPopup, setShowPinPopup] = useState(false);
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    const handleLogin = () => {
+        setLoggedIn(true);
+    };
+
+    const handleLogout = () => {
+        setLoggedIn(false);
+        setShowPinPopup(false); // Close the PIN popup on logout
+    };
+
+    return (
+        <div className="App">
+            {loggedIn ? (
+                <div>
+                    {/* Your authenticated content */}
+                    <p>Welcome, User!</p>
+                    <button onClick={handleLogout}>Logout</button>
+                </div>
+            ) : (
+                <button onClick={() => setShowPinPopup(true)}>Login</button>
+            )}
+
+            <PinEntryPopup
+                show={showPinPopup}
+                handleClose={() => setShowPinPopup(false)}
+                handleLogin={handleLogin}
+            />
+        </div>
+    );
+}
+
+export default App;
