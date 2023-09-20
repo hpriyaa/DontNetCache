@@ -1,0 +1,26 @@
+import React, { useState } from 'react';
+import AccountDropdown from './AccountDropdown';
+
+function TransferPage() {
+    const [selectedAccount, setSelectedAccount] = useState('');
+
+    const handleAccountSelect = (accountId) => {
+        setSelectedAccount(accountId);
+    };
+
+    return (
+        <div>
+            <h2>Transfer Page</h2>
+            <AccountDropdown onSelectAccount={handleAccountSelect} />
+
+            {selectedAccount && (
+                <div>
+                    <h3>Selected Account: {selectedAccount}</h3>
+                    {/* Add transfer form and logic here */}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default TransferPage;
