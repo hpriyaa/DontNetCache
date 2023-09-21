@@ -63,6 +63,48 @@ namespace ALEHA_API.Tests
             Assert.AreEqual(balanceResponse, result);
         }
 
-        // Add similar tests for other methods like PinValidation, PinChange, and DeleteAccount.
+        [Test]
+        public void PinValidation_ValidPin_ReturnsPinValidationResponse()
+        {
+            // Arrange
+            var pinValidationRequest = new PinValidationRequest { /* Initialize with valid data */ };
+            var pinValidationResponse = new PinValidationResponse { /* Initialize with valid response data */ };
+            _mockRepo.Setup(repo => repo.PinValidation(It.IsAny<PinValidationRequest>())).Returns(pinValidationResponse);
+        
+            // Act
+            var result = _accountService.PinValidation(pinValidationRequest);
+        
+            // Assert
+            Assert.AreEqual(pinValidationResponse, result);
+        }
+        
+        [Test]
+        public void PinChange_ValidPinChangeModel_ReturnsSuccessMessage()
+        {
+            // Arrange
+            var pinChangeModel = new PinChangeModel { /* Initialize with valid data */ };
+            _mockRepo.Setup(repo => repo.PinChange(It.IsAny<PinChangeModel>())).Returns("Success"); // Simulate success
+        
+            // Act
+            var result = _accountService.PinChange(pinChangeModel);
+        
+            // Assert
+            Assert.AreEqual("Success", result);
+        }
+        
+        [Test]
+        public void DeleteAccount_ValidAccountNumber_ReturnsTrue()
+        {
+            // Arrange
+            int accountNumber = 123; // Replace with a valid account number
+            _mockRepo.Setup(repo => repo.DeleteAccount(accountNumber)).Returns(true); // Simulate success
+        
+            // Act
+            bool result = _accountService.DeleteAccount(accountNumber);
+        
+            // Assert
+            Assert.IsTrue(result);
+        }
+
     }
 }
