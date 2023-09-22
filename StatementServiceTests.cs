@@ -52,6 +52,50 @@ namespace ALEHA_API.Tests
             Assert.IsEmpty(result);
         }
 
-        // Add more test cases for various scenarios, such as empty statements or exceptions.
+        [Test]
+public void Statement_EmptyStatements_ReturnsEmptyList()
+{
+    // Arrange
+    int accountNumber = 123; // Replace with a valid account number
+    _mockRepo.Setup(repo => repo.Statement(accountNumber)).Returns(new List<Transaction>()); // Simulate empty statements
+
+    // Act
+    var result = _statementService.Statement(accountNumber);
+
+    // Assert
+    Assert.IsNotNull(result);
+    Assert.IsEmpty(result);
+}
+
+[Test]
+public void Statement_RepositoryThrowsException_ReturnsEmptyList()
+{
+    // Arrange
+    int accountNumber = 123; // Replace with a valid account number
+    _mockRepo.Setup(repo => repo.Statement(accountNumber)).Throws(new Exception("Simulated exception"));
+
+    // Act
+    var result = _statementService.Statement(accountNumber);
+
+    // Assert
+    Assert.IsNotNull(result);
+    Assert.IsEmpty(result);
+}
+
+[Test]
+public void Statement_InvalidAccountNumber_ReturnsEmptyList()
+{
+    // Arrange
+    int invalidAccountNumber = -1; // Replace with an invalid account number
+    _mockRepo.Setup(repo => repo.Statement(invalidAccountNumber)).Returns(new List<Transaction>());
+
+    // Act
+    var result = _statementService.Statement(invalidAccountNumber);
+
+    // Assert
+    Assert.IsNotNull(result);
+    Assert.IsEmpty(result);
+}
+
     }
 }
