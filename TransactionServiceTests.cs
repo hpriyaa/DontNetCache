@@ -129,151 +129,62 @@ namespace ALEHA_API.Tests
         }
 
         [Test]
-public void Withdrawal_InvalidTransactionRequest_ReturnsErrorMessage()
-{
-    // Arrange
-    var invalidRequest = new TransactionRequestModel { /* Initialize with invalid withdrawal request data */ };
+        public void Withdrawal_InvalidTransactionRequest_ReturnsErrorMessage()
+        {
+            // Arrange
+            var invalidRequest = new TransactionRequestModel { /* Initialize with invalid withdrawal request data */ };
+        
+            // Act
+            var result = _transactionService.Withdrawal(invalidRequest);
+        
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Invalid withdrawal request", result.ErrorMessage);
+        }
+        
+        [Test]
+        public void Deposit_InvalidTransactionRequest_ReturnsErrorMessage()
+        {
+            // Arrange
+            var invalidRequest = new TransactionRequestModel { /* Initialize with invalid deposit request data */ };
+        
+            // Act
+            var result = _transactionService.Deposit(invalidRequest);
+        
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Invalid deposit request", result.ErrorMessage);
+        }
+        
+        [Test]
+        public void Transfer_InvalidTransferRequest_ReturnsErrorMessage()
+        {
+            // Arrange
+            var invalidRequest = new TransactionRequestModel { /* Initialize with invalid transfer request data */ };
+        
+            // Act
+            var result = _transactionService.Transfer(invalidRequest);
+        
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Invalid transfer request", result.ErrorMessage);
+        }
+        
+        [Test]
+        public void CurrencyExchange_InvalidCurrency_ReturnsOriginalValue()
+        {
+            // Arrange
+            var invalidCurrency = "INVALID"; // Replace with an invalid currency code
+            decimal value = 100.0m; // Replace with a valid amount
+        
+            // Act
+            decimal result = _transactionService.CurrencyExchange(invalidCurrency, value);
+        
+            // Assert
+            Assert.AreEqual(value, result); // It should return the original value for an invalid currency
+        }
 
-    // Act
-    var result = _transactionService.Withdrawal(invalidRequest);
 
-    // Assert
-    Assert.IsNotNull(result);
-    Assert.AreEqual("Invalid withdrawal request", result.ErrorMessage);
-}
-
-[Test]
-public void Deposit_InvalidTransactionRequest_ReturnsErrorMessage()
-{
-    // Arrange
-    var invalidRequest = new TransactionRequestModel { /* Initialize with invalid deposit request data */ };
-
-    // Act
-    var result = _transactionService.Deposit(invalidRequest);
-
-    // Assert
-    Assert.IsNotNull(result);
-    Assert.AreEqual("Invalid deposit request", result.ErrorMessage);
-}
-
-[Test]
-public void Transfer_InvalidTransferRequest_ReturnsErrorMessage()
-{
-    // Arrange
-    var invalidRequest = new TransactionRequestModel { /* Initialize with invalid transfer request data */ };
-
-    // Act
-    var result = _transactionService.Transfer(invalidRequest);
-
-    // Assert
-    Assert.IsNotNull(result);
-    Assert.AreEqual("Invalid transfer request", result.ErrorMessage);
-}
-
-[Test]
-public void CurrencyExchange_InvalidCurrency_ReturnsOriginalValue()
-{
-    // Arrange
-    var invalidCurrency = "INVALID"; // Replace with an invalid currency code
-    decimal value = 100.0m; // Replace with a valid amount
-
-    // Act
-    decimal result = _transactionService.CurrencyExchange(invalidCurrency, value);
-
-    // Assert
-    Assert.AreEqual(value, result); // It should return the original value for an invalid currency
-}
-
-[Test]
-public void CurrencyExchange_ExchangeRateNotFound_ReturnsOriginalValue()
-{
-    // Arrange
-    var currency = "GBP"; // Replace with a currency code that's not in the exchange rates list
-    decimal value = 100.0m; // Replace with a valid amount
-
-    // Mock reading exchange rates from a file with a missing currency
-    var jsonString = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, decimal>());
-    _mockRepo.Setup(repo => repo.ReadAllText("./Repo/exchangeRates.json")).Returns(jsonString);
-
-    // Act
-    decimal result = _transactionService.CurrencyExchange(currency, value);
-
-    // Assert
-    Assert.AreEqual(value, result); // It should return the original value since the exchange rate is not found
-}
-[Test]
-public void Withdrawal_InvalidTransactionRequest_ReturnsErrorMessage()
-{
-    // Arrange
-    var invalidRequest = new TransactionRequestModel { /* Initialize with invalid withdrawal request data */ };
-
-    // Act
-    var result = _transactionService.Withdrawal(invalidRequest);
-
-    // Assert
-    Assert.IsNotNull(result);
-    Assert.AreEqual("Invalid withdrawal request", result.ErrorMessage);
-}
-
-[Test]
-public void Deposit_InvalidTransactionRequest_ReturnsErrorMessage()
-{
-    // Arrange
-    var invalidRequest = new TransactionRequestModel { /* Initialize with invalid deposit request data */ };
-
-    // Act
-    var result = _transactionService.Deposit(invalidRequest);
-
-    // Assert
-    Assert.IsNotNull(result);
-    Assert.AreEqual("Invalid deposit request", result.ErrorMessage);
-}
-
-[Test]
-public void Transfer_InvalidTransferRequest_ReturnsErrorMessage()
-{
-    // Arrange
-    var invalidRequest = new TransactionRequestModel { /* Initialize with invalid transfer request data */ };
-
-    // Act
-    var result = _transactionService.Transfer(invalidRequest);
-
-    // Assert
-    Assert.IsNotNull(result);
-    Assert.AreEqual("Invalid transfer request", result.ErrorMessage);
-}
-
-[Test]
-public void CurrencyExchange_InvalidCurrency_ReturnsOriginalValue()
-{
-    // Arrange
-    var invalidCurrency = "INVALID"; // Replace with an invalid currency code
-    decimal value = 100.0m; // Replace with a valid amount
-
-    // Act
-    decimal result = _transactionService.CurrencyExchange(invalidCurrency, value);
-
-    // Assert
-    Assert.AreEqual(value, result); // It should return the original value for an invalid currency
-}
-
-[Test]
-public void CurrencyExchange_ExchangeRateNotFound_ReturnsOriginalValue()
-{
-    // Arrange
-    var currency = "GBP"; // Replace with a currency code that's not in the exchange rates list
-    decimal value = 100.0m; // Replace with a valid amount
-
-    // Mock reading exchange rates from a file with a missing currency
-    var jsonString = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, decimal>());
-    _mockRepo.Setup(repo => repo.ReadAllText("./Repo/exchangeRates.json")).Returns(jsonString);
-
-    // Act
-    decimal result = _transactionService.CurrencyExchange(currency, value);
-
-    // Assert
-    Assert.AreEqual(value, result); // It should return the original value since the exchange rate is not found
-}
 
     }
 }
