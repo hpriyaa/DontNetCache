@@ -1,0 +1,19 @@
+USE ALEHABankDB
+
+DELETE FROM Transactions WHERE transaction_number BETWEEN 10 AND 20
+
+ALTER TABLE Transactions
+ADD user_transaction_message VARCHAR(30)
+
+ALTER TABLE Transactions
+ADD sys_transaction_message VARCHAR(100)
+
+UPDATE Transactions SET sys_transaction_message='100 WITHDRAWN from Account Number 100 at 2023-09-18' WHERE transaction_number = 1011
+UPDATE Transactions SET sys_transaction_message='100 WITHDRAWN from Account Number 100 at 2023-09-18' WHERE transaction_number = 1013
+UPDATE Transactions SET sys_transaction_message='200 WITHDRAWN from Account Number 101 at 2023-09-18' WHERE transaction_number = 1015
+UPDATE Transactions SET sys_transaction_message='250 WITHDRAWN from Account Number 101 at 2023-09-18' WHERE transaction_number = 1017
+
+UPDATE Transactions SET sys_transaction_message='100 DEPOSIT to Account Number 101 at 2023-09-18' WHERE transaction_number = 1012
+UPDATE Transactions SET sys_transaction_message='100 DEPOSIT to Account Number 101 at 2023-09-18' WHERE transaction_number = 1014
+UPDATE Transactions SET sys_transaction_message='200 DEPOSIT to Account Number 100 at 2023-09-18' WHERE transaction_number = 1016
+UPDATE Transactions SET sys_transaction_message='250 DEPOSIT to Account Number 100 at 2023-09-18' WHERE transaction_number = 1018
