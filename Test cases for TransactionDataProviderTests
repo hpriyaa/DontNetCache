@@ -1,0 +1,333 @@
+using ALEHA_API.Models;
+using ALEHA_API.Repository;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+
+namespace ALEHA_API.Tests
+{
+    [TestFixture]
+    public class TransactionDataProviderTests
+    {
+        private TransactionDataProvider _dataProvider;
+        private AlehabankDbContext _dbContext;
+
+        [SetUp]
+        public void Setup()
+        {
+            // Create an in-memory database for testing
+            var options = new DbContextOptionsBuilder<AlehabankDbContext>()
+                .UseInMemoryDatabase(databaseName: "test_db")
+                .Options;
+
+            _dbContext = new AlehabankDbContext(options);
+            _dataProvider = new TransactionDataProvider(_dbContext);
+
+            // Initialize the in-memory database with sample data if needed
+            InitializeInMemoryDatabase();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Dispose of the database context and clear the database after each test
+            _dbContext.Dispose();
+        }
+
+        [Test]
+        public void CreateTransaction_ValidTransactionRequest_ReturnsTransaction()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "WITHDRAWAL",
+                amount = 100.0m,
+                SenderAccountNumber = 1,
+            };
+
+            // Act
+            var transaction = _dataProvider.CreateTransaction(transactionRequest);
+
+            // Assert
+            Assert.IsNotNull(transaction);
+            Assert.AreEqual("WITHDRAWAL", transaction.TransactionType);
+            Assert.AreEqual(100.0m, transaction.TransactionAmount);
+            Assert.AreEqual(1, transaction.AccountNumber);
+            Assert.AreEqual("Amount Debited", transaction.SysTransactionMessage);
+        }
+
+        [Test]
+        public void Withdrawal_InsufficientBalance_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "WITHDRAWAL",
+                amount = 1000.0m, // This amount is greater than the balance
+                SenderAccountNumber = 1,
+            };
+
+            // Act
+            var response = _dataProvider.Withdrawal(transactionRequest);
+
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Insufficient Balance", response.TransactionSysMessage);
+        }
+
+        [Test]
+        public void Withdrawal_ValidTransaction_ReturnsSuccessResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "WITHDRAWAL",
+                amount = 50.0m, // This amount is within the balance
+                SenderAccountNumber = 1,
+            };
+
+            // Act
+            var response = _dataProvider.Withdrawal(transactionRequest);
+
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("SUCCESS", response.TransactionStatus);
+            Assert.AreEqual("Amount Debited", response.TransactionSysMessage);
+        }
+
+        [Test]
+        public void Deposit_ValidTransaction_ReturnsSuccessResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "DEPOSIT",
+                amount = 100.0m,
+                SenderAccountNumber = 1, // Account to deposit into
+            };
+        
+            // Act
+            var response = _dataProvider.Deposit(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("SUCCESS", response.TransactionStatus);
+            Assert.AreEqual("Amount Credited", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void Transfer_SenderAndRecipientAccountsAreSame_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "TRANSFER",
+                amount = 50.0m,
+                SenderAccountNumber = 1,
+                RecipientAccountNumber = 1, // Sender and recipient accounts are the same
+            };
+        
+            // Act
+            var response = _dataProvider.Transfer(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Sender and Reciever Account number cannot be the same.", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void Transfer_InsufficientBalance_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "TRANSFER",
+                amount = 1000.0m, // This amount is greater than the balance
+                SenderAccountNumber = 1,
+                RecipientAccountNumber = 2,
+            };
+        
+            // Act
+            var response = _dataProvider.Transfer(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Insufficient balance", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void Transfer_ValidTransaction_ReturnsSuccessResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "TRANSFER",
+                amount = 50.0m, // This amount is within the balance
+                SenderAccountNumber = 1,
+                RecipientAccountNumber = 2,
+            };
+        
+            // Act
+            var response = _dataProvider.Transfer(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("SUCCESS", response.TransactionStatus);
+            Assert.AreEqual("SUCCESS", response.TransactionSysMessage);
+            // Add more assertions as needed for the specific response data
+        }
+        
+        [Test]
+        public void Statement_ValidAccountNumber_ReturnsStatementList()
+        {
+            // Arrange
+            int accountNumber = 1; // Replace with a valid account number
+        
+            // Act
+            var statement = _dataProvider.Statement(accountNumber);
+        
+            // Assert
+            Assert.IsNotNull(statement);
+            // Add more assertions as needed to validate the statement data
+        }
+
+        [Test]
+        public void Deposit_InvalidAccountNumber_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "DEPOSIT",
+                amount = 100.0m,
+                SenderAccountNumber = 999, // Invalid account number
+            };
+        
+            // Act
+            var response = _dataProvider.Deposit(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Invalid account number", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void Withdrawal_InvalidAccountNumber_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "WITHDRAWAL",
+                amount = 50.0m,
+                SenderAccountNumber = 999, // Invalid account number
+            };
+        
+            // Act
+            var response = _dataProvider.Withdrawal(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Invalid account number", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void Transfer_InvalidSenderAccount_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "TRANSFER",
+                amount = 50.0m,
+                SenderAccountNumber = 999, // Invalid sender account number
+                RecipientAccountNumber = 2, // Valid recipient account number
+            };
+        
+            // Act
+            var response = _dataProvider.Transfer(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Invalid sender account number", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void Transfer_InvalidRecipientAccount_ReturnsFailedResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel
+            {
+                TransactionType = "TRANSFER",
+                amount = 50.0m,
+                SenderAccountNumber = 1, // Valid sender account number
+                RecipientAccountNumber = 999, // Invalid recipient account number
+            };
+        
+            // Act
+            var response = _dataProvider.Transfer(transactionRequest);
+        
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.AreEqual("FAILED", response.TransactionStatus);
+            Assert.AreEqual("Invalid recipient account number", response.TransactionSysMessage);
+        }
+        
+        [Test]
+        public void CurrencyExchange_InvalidCurrency_ReturnsOriginalValue()
+        {
+            // Arrange
+            var currency = "INVALID"; // Invalid currency code
+            int value = 100;
+        
+            // Act
+            var convertedValue = _dataProvider.CurrencyExchange(currency, value);
+        
+            // Assert
+            Assert.AreEqual(value, convertedValue);
+        }
+        
+        [Test]
+        public void CurrencyExchange_ReadExchangeRatesFileError_ReturnsOriginalValue()
+        {
+            // Arrange
+            var currency = "USD"; // Valid currency code
+            int value = 100;
+            
+            // Simulate an error when reading the exchange rates file
+            _dataProvider = new TransactionDataProvider(null); // Pass null context to trigger error
+        
+            // Act
+            var convertedValue = _dataProvider.CurrencyExchange(currency, value);
+        
+            // Assert
+            Assert.AreEqual(value, convertedValue);
+        }
+
+
+
+
+        private void InitializeInMemoryDatabase()
+        {
+            // Add sample data to the in-memory database for testing
+            var account1 = new Account
+            {
+                AccountNumber = 1,
+                Balance = 500.0m, // Initial balance
+            };
+
+            _dbContext.Accounts.Add(account1);
+
+            // Add more sample data as needed
+
+            _dbContext.SaveChanges();
+        }
+    }
+}
