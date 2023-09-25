@@ -1,0 +1,99 @@
+using ALEHA_API.Controllers;
+using ALEHA_API.Models;
+using ALEHA_API.Services;
+using Microsoft.AspNetCore.Mvc;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace ALEHA_API.Tests
+{
+    [TestFixture]
+    public class TransactionsControllerTests
+    {
+        private TransactionsController _controller;
+        private Mock<ITransactionService> _mockTransactionService;
+        private Mock<IAccountService> _mockAccountService;
+        private Mock<ICustomerService> _mockCustomerService;
+
+        [SetUp]
+        public void Setup()
+        {
+            // Create mock services and controller
+            _mockTransactionService = new Mock<ITransactionService>();
+            _mockAccountService = new Mock<IAccountService>();
+            _mockCustomerService = new Mock<ICustomerService>();
+
+            _controller = new TransactionsController(
+                _mockTransactionService.Object,
+                _mockAccountService.Object,
+                _mockCustomerService.Object
+            );
+        }
+
+        [Test]
+        public async Task TransactionRequest_ValidRequest_ReturnsTransactionResponse()
+        {
+            // Arrange
+            var transactionRequest = new TransactionRequestModel { /* Initialize with valid request data */ };
+            var transactionResponse = new TransactionResponseModel { /* Initialize with valid response data */ };
+            
+            // Mock PinValidation and service method calls
+            _mockAccountService.Setup(service => service.PinValidation(It.IsAny<PinValidationRequest>()))
+                .Returns(new PinValidationResponse { /* Initialize with valid response data */ });
+            _mockTransactionService.Setup(service => service.Withdrawal(It.IsAny<TransactionRequestModel>()))
+                .Returns(transactionResponse);
+
+            // Act
+            var result = await _controller.TransactionRequest(transactionRequest);
+
+            // Assert
+            Assert.IsNotNull(result);
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            var response = okResult.Value as TransactionResponseModel;
+            Assert.IsNotNull(response);
+            // Add more assertions as needed
+        }
+
+        [Test]
+        public async Task Statement_ValidAccountNumber_ReturnsTransactionList()
+        {
+            // Arrange
+            int accountNumber = 123; // Replace with a valid account number
+            var transactions = new List<Transaction> { /* Initialize with valid transactions */ };
+            _mockTransactionService.Setup(service => service.Statement(accountNumber))
+                .Returns(transactions);
+
+            // Act
+            var result = await _controller.Statement(accountNumber);
+
+            // Assert
+            Assert.IsNotNull(result);
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            var statement = okResult.Value as List<Transaction>;
+            Assert.IsNotNull(statement);
+            // Add more assertions as needed
+        }
+
+        [Test]
+        public void CurrencyExchange_ValidCurrency_ReturnsConvertedAmount()
+        {
+            // Arrange
+            var currency = "USD"; // Replace with a valid currency code
+            int value = 100; // Replace with a valid amount
+            decimal convertedValue = 85.0m; // Replace with the expected converted value
+            _mockTransactionService.Setup(service => service.CurrencyExchange(currency, value))
+                .Returns(convertedValue);
+
+            // Act
+            var result = _controller.CurrencyExchange(currency, value);
+
+            // Assert
+            Assert.AreEqual(convertedValue, result);
+        }
+
+        // Add more test cases for various scenarios, including invalid requests and service responses.
+    }
+}
