@@ -135,6 +135,72 @@ namespace ALEHA_API.Tests.Controllers
             Assert.AreEqual(500, (result.Result as ObjectResult)?.StatusCode);
         }
 
-        // Additional test methods for GetAllCustomers, EditCustomer, etc.
+         [Test]
+        public async Task GetAllCustomers_AuthorizedAsAdmin_ReturnsOk()
+        {
+            // Arrange
+            var adminUser = "admin@example.com";
+            var customers = new List<Customer> { /* customers data */ };
+
+            var claims = new List<Claim>
+            {
+                new Claim("Username", adminUser),
+                new Claim(ClaimTypes.Role, "ADMIN")
+            };
+            var identity = new ClaimsIdentity(claims, "Test");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            _customerService.Setup(c => c.GetCustomers()).Returns(customers);
+
+            // Act
+            var result = await _controller.GetAllCustomers();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        }
+
+        [Test]
+        public async Task EditCustomer_ValidCustomer_ReturnsOk()
+        {
+            // Arrange
+            var adminUser = "admin@example.com";
+            var customerToUpdate = new Customer { /* customer data to update */ };
+            var expectedResult = "SUCCESS";
+
+            var claims = new List<Claim>
+            {
+                new Claim("Username", adminUser),
+                new Claim(ClaimTypes.Role, "ADMIN")
+            };
+            var identity = new ClaimsIdentity(claims, "Test");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            _customerService.Setup(c => c.EditCustomer(It.IsAny<Customer>())).Returns(expectedResult);
+
+            // Act
+            var result = await _controller.EditCustomer(customerToUpdate);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.AreEqual(expectedResult, (result.Result as OkObjectResult)?.Value);
+        }
     }
 }
