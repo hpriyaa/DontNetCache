@@ -1,0 +1,31 @@
+import React, {useState} from "react";
+import { Container, Row, Col, Card, Form, Button} from 'react-bootstrap';
+import CustomerTable from "../Components/CustomerTable";
+import { useNavigate } from "react-router-dom";
+
+const ViewCustomer = () => {
+    
+
+    return (
+        <Container fluid>
+        <h1>Admin Dashboard</h1>
+      
+        <Row style={{marginBottom: "20px"}}>
+          <Col md={12}>
+            <Card>
+              <Card.Body >
+                <h2 className="text-center">View Customer Details</h2>
+                <Container>
+      <CustomerTable/>
+    </Container>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+       
+      </Container>
+    );
+}
+
+
+export default ViewCustomer;
