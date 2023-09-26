@@ -1,0 +1,265 @@
+using ALEHA_API.Models;
+using ALEHA_API.Repository;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ALEHA_API.Tests
+{
+    [TestFixture]
+    public class CustomerDataProviderTests
+    {
+        private AlehabankDbContext _dbContext;
+        private ICustomerDataProvider<Customer> _customerDataProvider;
+
+        [SetUp]
+        public void Setup()
+        {
+            // In-memory database for testing
+            var options = new DbContextOptionsBuilder<AlehabankDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+
+            _dbContext = new AlehabankDbContext(options);
+            _dbContext.Database.EnsureCreated(); // Ensure the database is created
+
+            // Initialize CustomerDataProvider with the in-memory database context
+            _customerDataProvider = new CustomerDataProvider(_dbContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Dispose of the in-memory database context
+            _dbContext.Dispose();
+        }
+
+        [Test]
+        public void AddCustomerDetails_ValidCustomer_ReturnsCustomerId()
+        {
+            // Arrange
+            var customer = new Customer
+            {
+                CustomerName = "John Doe",
+                Dob = DateTime.Parse("1990-01-01"),
+                PhoneNumber = "1234567890",
+                Email = "johndoe@example.com",
+                CustomerAddress = "123 Main St",
+                City = "New York",
+                AadhaarNumber = "123456789012"
+            };
+
+            // Act
+            var customerId = _customerDataProvider.AddCustomerDetails(customer);
+
+            // Assert
+            Assert.IsTrue(customerId > 0);
+        }
+
+        [Test]
+        public void ViewAccounts_ValidCustomerId_ReturnsAccountList()
+        {
+            // Arrange
+            var customer = new Customer
+            {
+                CustomerName = "Jane Doe",
+                Dob = DateTime.Parse("1985-05-05"),
+                PhoneNumber = "9876543210",
+                Email = "janedoe@example.com",
+                CustomerAddress = "456 Elm St",
+                City = "Los Angeles",
+                AadhaarNumber = "987654321012"
+            };
+
+            // Add the customer to the database
+            var customerId = _customerDataProvider.AddCustomerDetails(customer);
+
+            // Create a test account for the customer
+            var account = new Account
+            {
+                AccountType = "Savings",
+                CustomerId = customerId,
+                Balance = 1000.0m
+            };
+            _dbContext.Accounts.Add(account);
+            _dbContext.SaveChanges();
+
+            // Act
+            var accountList = _customerDataProvider.ViewAccounts(customerId);
+
+            // Assert
+            Assert.IsNotNull(accountList);
+            Assert.AreEqual(1, accountList.Count);
+            Assert.AreEqual("Savings", accountList[0].AccountType);
+        }
+
+        // Add more test cases for other methods in CustomerDataProvider
+
+        [Test]
+        public void GetCustomerName_ValidUserEmail_ReturnsCustomerName()
+        {
+            // Arrange
+            var customer = new Customer
+            {
+                CustomerName = "Alice Johnson",
+                Dob = DateTime.Parse("1980-08-15"),
+                PhoneNumber = "5555555555",
+                Email = "alice@example.com",
+                CustomerAddress = "789 Oak St",
+                City = "San Francisco",
+                AadhaarNumber = "555555555555"
+            };
+
+            // Add the customer to the database
+            var customerId = _customerDataProvider.AddCustomerDetails(customer);
+
+            // Act
+            var customerName = _customerDataProvider.GetCustomerName("alice@example.com");
+
+            // Assert
+            Assert.IsNotNull(customerName);
+            Assert.AreEqual("Alice Johnson", customerName);
+        }
+
+        // Add more test cases for other methods in CustomerDataProvider
+
+        [Test]
+        public void EditCustomer_ValidCustomer_ReturnsSuccess()
+        {
+            // Arrange
+            var customer = new Customer
+            {
+                CustomerName = "Bob Smith",
+                Dob = DateTime.Parse("1975-03-20"),
+                PhoneNumber = "4444444444",
+                Email = "bob@example.com",
+                CustomerAddress = "567 Maple St",
+                City = "Chicago",
+                AadhaarNumber = "444444444444"
+            };
+
+            // Add the customer to the database
+            var customerId = _customerDataProvider.AddCustomerDetails(customer);
+
+            // Create a modified customer object
+            var modifiedCustomer = new Customer
+            {
+                Email = "bob@example.com",
+                CustomerName = "Robert Smith",
+                PhoneNumber = "5555555555",
+                CustomerAddress = "123 Elm St",
+                City = "Houston"
+            };
+
+            // Act
+            var result = _customerDataProvider.EditCustomer(modifiedCustomer);
+
+            // Assert
+            Assert.AreEqual("SUCCESS", result);
+        }
+
+        [Test]
+public void AddCustomerDetails_NullCustomer_ReturnsZero()
+{
+    // Act
+    var customerId = _customerDataProvider.AddCustomerDetails(null);
+
+    // Assert
+    Assert.AreEqual(0, customerId);
+}
+
+[Test]
+public void ViewAccounts_InvalidCustomerId_ReturnsNull()
+{
+    // Act
+    var accountList = _customerDataProvider.ViewAccounts(999); // Non-existent customer ID
+
+    // Assert
+    Assert.IsNull(accountList);
+}
+
+[Test]
+public void GetCustomerId_ValidUserEmail_ReturnsCustomerId()
+{
+    // Arrange
+    var customer = new Customer
+    {
+        CustomerName = "Test User",
+        Dob = DateTime.Parse("1995-12-31"),
+        PhoneNumber = "9999999999",
+        Email = "testuser@example.com",
+        CustomerAddress = "789 Elm St",
+        City = "Seattle",
+        AadhaarNumber = "999999999999"
+    };
+
+    // Add the customer to the database
+    var customerId = _customerDataProvider.AddCustomerDetails(customer);
+
+    // Act
+    var foundCustomerId = _customerDataProvider.GetCustomerId("testuser@example.com");
+
+    // Assert
+    Assert.AreEqual(customerId, foundCustomerId);
+}
+
+[Test]
+public void GetCustomers_NoCustomersInDatabase_ReturnsEmptyList()
+{
+    // Act
+    var customers = _customerDataProvider.GetCustomers();
+
+    // Assert
+    Assert.IsNotNull(customers);
+    Assert.AreEqual(0, customers.Count);
+}
+
+[Test]
+public void ValidateAccount_ValidAccount_ReturnsTrue()
+{
+    // Arrange
+    var customer = new Customer
+    {
+        CustomerName = "Test Customer",
+        Dob = DateTime.Parse("1990-06-15"),
+        PhoneNumber = "7777777777",
+        Email = "testcustomer@example.com",
+        CustomerAddress = "123 Oak St",
+        City = "Denver",
+        AadhaarNumber = "777777777777"
+    };
+
+    // Add the customer to the database
+    var customerId = _customerDataProvider.AddCustomerDetails(customer);
+
+    // Create a test account for the customer
+    var account = new Account
+    {
+        AccountType = "Checking",
+        CustomerId = customerId,
+        Balance = 500.0m
+    };
+    _dbContext.Accounts.Add(account);
+    _dbContext.SaveChanges();
+
+    // Act
+    var validationStatus = _customerDataProvider.ValidateAccount(customerId, account.AccountNumber);
+
+    // Assert
+    Assert.IsTrue(validationStatus);
+}
+
+[Test]
+public void ValidateAccount_InvalidAccount_ReturnsFalse()
+{
+    // Act
+    var validationStatus = _customerDataProvider.ValidateAccount(123, 456); // Non-existent customer and account numbers
+
+    // Assert
+    Assert.IsFalse(validationStatus);
+}
+
+    
+}
