@@ -1,0 +1,93 @@
+import React, { useContext } from 'react';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import Button from 'react-bootstrap/Button';
+import { AppContext } from "../Context/App.context";
+import { useNavigate, useLocation } from "react-router-dom";
+
+const NavbarComponent = ({ navigate }) => {
+    const { user, handleUserInfo } = useContext(AppContext);
+    const location = useLocation(); // Get the current location
+    const handleRegister = () => {
+        navigate('/login');
+    }
+
+    // Check if the current location is "/customer" (Accounts Details page)
+    const isCustomerPage = location.pathname === '/customer';
+
+    // Check if the current location is "/transfer" (Transaction page)
+    const isTransferPage = location.pathname === '/transfer';
+
+
+    // Check if the current location is "/statement" (statement page)
+    const isStatementPage = location.pathname === '/statement';
+
+     // Check if the current location is "/sadmin-dashboard" (statement page)
+     const isadmindashboardPage = location.pathname === '/admin-dashboard';
+
+     // Check if the current location is "/register" (statement page)
+     const isregisterPage = location.pathname === '/register';
+
+     const isaccountregistrationPage = location.pathname === '/account-registration';
+
+
+     const ispinchange = location.pathname === '/pinchange';
+
+     const isviewcustomer = location.pathname === '/viewcustomer';
+
+    
+
+    return (
+        <Navbar bg="dark" variant="dark" expand="lg" >
+            <Navbar.Brand style={{ padding: "10px" }}> ALEHA </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav" style={{ justifyItems: "space-between" }} >
+                <Nav className="ml-auto" style={{ display: "flex", flexGrow: 1, justifyContent: "space-between" }} >
+                    <Nav.Item>
+                        <Nav.Link>{user && user.userName ? `Welcome, ${user.userName}` : ""} </Nav.Link>
+                    </Nav.Item>
+                    {isCustomerPage && user && (
+                        <Nav.Item style={{ paddingRight: "10px" }}>
+                            <Button variant="danger" onClick={() => handleUserInfo(null)}>Logout</Button>
+                        </Nav.Item>
+                    )}
+                    {(isTransferPage || ispinchange) && (
+                        <Nav.Item>
+                            
+                        <Button variant="primary" onClick={() => navigate('/customer')}>Account Details</Button>
+                        <Button variant="danger" onClick={() => handleUserInfo(null)}>Logout</Button>
+                        </Nav.Item>
+                        
+                    )}
+                    {isStatementPage && (
+                        <Nav.Item>
+                            
+                        <Button variant="primary" onClick={() => navigate('/customer')}>Account Details</Button>
+                        <Button variant="danger" onClick={() => handleUserInfo(null)}>Logout</Button>
+                        </Nav.Item>
+                        
+                    )}
+
+                        {isadmindashboardPage && (
+                        <Nav.Item>
+                            
+                        
+                        <Button variant="danger" onClick={() => handleUserInfo(null)}>Logout</Button>
+                        </Nav.Item>
+                        
+                    )}
+                     {(isregisterPage || isaccountregistrationPage ||  isviewcustomer) && (
+                        <Nav.Item>
+                            
+                        <Button variant="primary" onClick={() => navigate('/admin-dashboard')}>admin-dashboard</Button>
+                        <Button variant="danger" onClick={() => handleUserInfo(null)}>Logout</Button>
+                        </Nav.Item>
+                        
+                    )}
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
+    );
+}
+
+export default NavbarComponent;
