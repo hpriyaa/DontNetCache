@@ -1,0 +1,140 @@
+using ALEHA_API.Controllers;
+using ALEHA_API.Models;
+using ALEHA_API.Services;
+using Microsoft.AspNetCore.Mvc;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Moq;
+
+namespace ALEHA_API.Tests.Controllers
+{
+    [TestFixture]
+    public class CustomersControllerTests
+    {
+        private CustomersController _controller;
+        private Mock<ICustomerService> _customerService;
+        private Mock<IAuthService<Auth>> _authService;
+
+        [SetUp]
+        public void Setup()
+        {
+            _customerService = new Mock<ICustomerService>();
+            _authService = new Mock<IAuthService<Auth>>();
+            _controller = new CustomersController(_customerService.Object, _authService.Object);
+        }
+
+        [Test]
+        public async Task PostCustomer_ValidRegistration_ReturnsOk()
+        {
+            // Arrange
+            var registerModel = new RegisterModel
+            {
+                auth = new Auth { /* auth data */ },
+                user = new Customer { /* customer data */ }
+            };
+
+            _authService.Setup(a => a.RegisterUser(It.IsAny<Auth>())).Returns(new Auth());
+            _customerService.Setup(c => c.AddCustomerDetails(It.IsAny<Customer>())).Returns("1");
+
+            // Act
+            var result = await _controller.PostCustomer(registerModel);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        }
+
+        [Test]
+        public async Task PostCustomer_InvalidRegistration_ReturnsBadRequest()
+        {
+            // Arrange
+            var registerModel = new RegisterModel
+            {
+                auth = new Auth { /* invalid auth data */ },
+                user = new Customer { /* invalid customer data */ }
+            };
+
+            _authService.Setup(a => a.RegisterUser(It.IsAny<Auth>())).Returns<Auth>(null);
+
+            // Act
+            var result = await _controller.PostCustomer(registerModel);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result.Result);
+        }
+
+        [Test]
+        public async Task ViewAccounts_ValidUser_ReturnsOk()
+        {
+            // Arrange
+            var user = "test@example.com";
+            var customerId = 1;
+            var accounts = new List<ViewAccountsResponse> { /* accounts data */ };
+
+            var claims = new List<Claim>
+            {
+                new Claim("Username", user)
+            };
+            var identity = new ClaimsIdentity(claims, "Test");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            _customerService.Setup(c => c.GetCustomerId(user)).Returns(customerId);
+            _customerService.Setup(c => c.ViewAccounts(customerId)).Returns(accounts);
+
+            // Act
+            var result = await _controller.ViewAccounts();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        }
+
+        [Test]
+        public async Task ViewAccounts_InvalidUser_ReturnsProblem()
+        {
+            // Arrange
+            var user = "test@example.com";
+            var customerId = 0; // Invalid customer ID
+
+            var claims = new List<Claim>
+            {
+                new Claim("Username", user)
+            };
+            var identity = new ClaimsIdentity(claims, "Test");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            _customerService.Setup(c => c.GetCustomerId(user)).Returns(customerId);
+
+            // Act
+            var result = await _controller.ViewAccounts();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<ObjectResult>(result.Result);
+            Assert.AreEqual(500, (result.Result as ObjectResult)?.StatusCode);
+        }
+
+        // Additional test methods for GetAllCustomers, EditCustomer, etc.
+    }
+}
