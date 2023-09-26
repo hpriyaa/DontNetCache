@@ -1,0 +1,228 @@
+import React, {useState} from "react";
+import { Container, Row, Col, Card, Form, Button} from 'react-bootstrap';
+import ForexCalculator from "../Components/ForexCalculator";
+import CustomerTable from "../Components/CustomerTable";
+import { useNavigate } from "react-router-dom";
+
+const AdminDashboard = () => {
+    const [customerId, setCustomerId] = useState('');
+    const [accountId, setAccountId] = useState('');
+    const [email, setEmail] = useState('');
+    
+    const navigate = useNavigate();
+    const handleCustomerIdChange = (event) => {
+      setCustomerId(event.target.value);
+    };
+  
+    const handleEmailChange = (event) => {
+      setEmail(event.target.value);
+    };
+
+    const handleAccountIdChange = (event) => {
+        setAccountId(event.target.value);
+    }
+  
+    const handleAddCustomer = () => {
+      navigate('/register');
+    };
+
+    const handleViewCustomer = () => {
+
+    };
+
+    const handleViewAccount = () => {
+      navigate('/account-dashboard');
+    };
+
+    const handleViewStatement = () => {
+      navigate('/statement');      
+    };
+
+    const handleAddAccount =  () => {
+      navigate('/account-registration');
+    };
+
+    
+
+    const handleCustomerDetails =  () => {
+      navigate('/viewcustomer');
+    };
+
+    return (
+        <Container fluid>
+        <h1>Admin Dashboard</h1>
+        <Col md={12}>
+            <Card>
+              <Card.Body>
+                <ForexCalculator/>
+              </Card.Body>
+            </Card>
+          </Col>
+        <Row style={{marginTop: "20px", marginBottom: "20px"}}>
+        <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>Add a New Customer</h2>
+                
+        <Button variant="primary" onClick={handleAddCustomer}>
+          Add Customer
+        </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+    
+          <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>Add a New Account</h2>
+                
+        <Button variant="primary" onClick={handleAddAccount}>
+          Add Account
+        </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{marginTop: "20px", marginBottom: "20px"}}>
+        <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>View Customer Details</h2>
+                
+        <Button variant="primary" onClick={handleCustomerDetails}>
+        View Customer
+        </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+    
+          <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>dummy 1 section</h2>
+                
+        <Button variant="primary" onClick={handleAddAccount}>
+          dummy1
+        </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{marginTop: "20px", marginBottom: "20px"}}>
+        <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>Dummy2 section</h2>
+                
+        <Button variant="primary" onClick={handleAddAccount}>
+        Dummy2
+        </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+    
+          <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>Dummy 3 section</h2>
+                
+        <Button variant="primary" onClick={handleAddAccount}>
+          Dummy3
+        </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* <Row style={{marginBottom: "20px"}}>
+          <Col md={12}>
+            <Card>
+              <Card.Body >
+                <h2 className="text-center">View Customer Details</h2>
+                <Container>
+      <CustomerTable/>
+    </Container>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+        <Col md={6}>
+            <Card>
+              <Card.Body>
+                
+                <h2 className="text-center">Manage Customer Accounts</h2>
+                <Container>
+      <Form>
+        <Form.Group controlId="customerId">
+            
+          <Form.Label>Customer ID</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Customer ID"
+            value={customerId}
+            onChange={handleCustomerIdChange}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="accountId">
+          <Form.Label>Account Id</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Account Id"
+            value={email}
+            onChange={handleAccountIdChange}
+          />
+        </Form.Group>
+
+        <Button variant="primary" onClick={handleViewAccount} style={{marginTop: "10px"}}>
+          View Account Details
+        </Button>
+      </Form>
+    </Container>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6}>
+            <Card>
+              <Card.Body className="text-center" >
+                <h2>View Customer Statement</h2>
+                
+                <Container>
+      <Form>
+        <Form.Group controlId="customerId">
+            
+          <Form.Label>Customer ID</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Customer ID"
+            value={customerId}
+            onChange={handleCustomerIdChange}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="accountId">
+          <Form.Label>Account Id</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Account Id"
+            value={email}
+            onChange={handleAccountIdChange}
+          />
+        </Form.Group>
+
+        <Button variant="primary" onClick={handleViewStatement} style={{marginTop: "10px"}}>
+          View Statement
+        </Button>
+      </Form>
+    </Container>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row> */}
+      </Container>
+    );
+}
+
+
+export default AdminDashboard;
