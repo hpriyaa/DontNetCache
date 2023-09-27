@@ -1,0 +1,31 @@
+using Moq;
+using Xunit;
+
+public class DataProviderTests
+{
+    [Fact]
+    public void GetCustomerById_ReturnsCorrectCustomer()
+    {
+        // Arrange
+        var userEmail = "john@example.com";
+        var expectedCustomerId = 1; // Change this to the expected customer ID
+
+        var mockDbContext = new Mock<YourDbContext>();
+        var mockDbSet = new Mock<DbSet<Customer>>();
+
+        mockDbContext.Setup(c => c.Customers).Returns(mockDbSet.Object);
+        mockDbSet.Setup(m => m.FirstOrDefault(It.IsAny<Func<Customer, bool>>())).Returns(new Customer
+        {
+            CustomerId = expectedCustomerId,
+            Email = userEmail
+        });
+
+        var dataProvider = new DataProvider(mockDbContext.Object);
+
+        // Act
+        var result = dataProvider.GetCustomerId(userEmail);
+
+        // Assert
+        Assert.Equal(expectedCustomerId, result);
+    }
+}
