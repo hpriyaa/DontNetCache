@@ -1,0 +1,35 @@
+using Moq;
+
+public class DataProviderTests
+{
+    [Fact]
+    public void GetTotalItems_ReturnsItemCount()
+    {
+        // Arrange
+        var mockDbContext = new Mock<YourDbContext>();
+        var mockDbSet = new Mock<DbSet<YourEntity>>();
+
+        // Set up DbSet behavior
+        mockDbContext.Setup(c => c.YourDbSet).Returns(mockDbSet.Object);
+
+        // Configure DbSet to return a test data
+        var testData = new List<YourEntity>
+        {
+            new YourEntity { Id = 1 },
+            new YourEntity { Id = 2 },
+        }.AsQueryable();
+
+        mockDbSet.As<IQueryable<YourEntity>>().Setup(m => m.Provider).Returns(testData.Provider);
+        mockDbSet.As<IQueryable<YourEntity>>().Setup(m => m.Expression).Returns(testData.Expression);
+        mockDbSet.As<IQueryable<YourEntity>>().Setup(m => m.ElementType).Returns(testData.ElementType);
+        mockDbSet.As<IQueryable<YourEntity>>().Setup(m => m.GetEnumerator()).Returns(() => testData.GetEnumerator());
+
+        var dataProvider = new DataProvider(mockDbContext.Object);
+
+        // Act
+        var result = dataProvider.GetTotalItems();
+
+        // Assert
+        Assert.Equal(2, result); // Check the expected result based on your test data
+    }
+}
